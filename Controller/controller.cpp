@@ -22,8 +22,8 @@ double Controller::step(Eigen::Vector3d stateest, double hr, double d1est)
 	in << stateest, hr, d1est;
 	
 	MatrixXd bias(5, 1);
-	bias << 1, 0, 0.069614844704911, 1, 0; // hbar, vbar, Nbar, hbar, dbar
-	in -= bias;
+	bias << HBAR, 0, NBAR, HBAR, 0; // hbar, vbar, Nbar, hbar, dbar
+	in = in - bias;
 	
 	MatrixXd gain(1, 5);
 	gain << -K, k, -kd;

@@ -1,7 +1,7 @@
 // g++ -o controller main.cpp PressureSensor/pressureSensor.cpp utils.cpp Observer/observer.cpp Controller/controller.cpp -lwiringPi -I /home/pi/Desktop/eigen
 // g++ -o controller main.cpp Observer/observer.cpp Controller/controller.cpp utils.cpp -I "E:/Dropbox/Projet Inno veste plongeur/Eigen/"
 
-// #define RASPI
+#define RASPI
 
 #ifdef RASPI
 	#include <wiringPi.h>
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 			#ifdef RASPI
 				hm = sensor.depth();
 			#else
-			    hm = 0.5;
+			    hm = 1;
 			#endif
 			
 			MatrixXd est = obs.step(hm, cont.getU());
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 			
 			u = cont.step(stateest, 0.15, dest);
 			
-			logData((currentT - startT)*1e-6, hm, stateest, dest, u, log);
+			log << (currentT - startT)*1e-6 << ", " << hm << ", " << est(1, 0) << ", " << est(2, 0) << ", " << est(3, 0) << ", " << dest << ", " << u << endl;
 		}
 	}
 	
