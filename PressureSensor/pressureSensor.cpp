@@ -66,7 +66,7 @@ double PressureSensor::pressure()
 
 double PressureSensor::depth()
 {
-	double pressure = 1e-5*(this->pressure() - mP0); // 1bar = 10m, pressure is in 0.1bar
+	double pressure = 1e-4*(this->pressure() - mP0); // 1bar = 10m, pressure is in 0.1bar
 }
 
 double PressureSensor::computeTP(uint32_t d1, uint32_t d2, uint32_t *constants)
