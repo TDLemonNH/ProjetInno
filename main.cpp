@@ -163,8 +163,8 @@ int main(int argc, char* argv[])
 			
 			timer = getTimeStamp();
 			
-				u = cont.step(stateest, 0.5, dest);
-				//u = cont.step(stateest, 0.5, 0);
+				//u = cont.step(stateest, 0.5, dest);
+				u = cont.step(stateest, 0.5, 0);
 				
 				piLock(0);
 					valve_command_wished = u;
