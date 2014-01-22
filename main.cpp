@@ -130,6 +130,7 @@ int main(int argc, char* argv[])
 			timer = getTimeStamp();
 				#ifdef RASPI
 					hm = sensor.depth();
+					cout << "hm: " << hm << endl;
 				#else
 					hm = 1;
 				#endif
