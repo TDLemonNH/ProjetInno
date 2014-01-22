@@ -23,7 +23,7 @@ void logData(double t, double hm, MatrixXd est, double dest, double u, ofstream 
 int main(int argc, char* argv[])
 {
 	// Parse arguments
-	int stepIncrement = 100000;
+	int stepIncrement = 10000;
 	for (int i = 1; i < argc; i++) {
 		if (i + 1 != argc) // Check that we haven't finished parsing already
 		{
@@ -75,6 +75,7 @@ int main(int argc, char* argv[])
 			timer = getTimeStamp();
 			#ifdef RASPI
 				hm = sensor.depth();
+				cout << "hm: " << hm << endl;
 			#else
 			    hm = 1;
 			#endif

@@ -5,12 +5,13 @@
 #include <wiringPi.h>
 #include <inttypes.h>
 #include <math.h>
+#include "../utils.hpp"
 
 #define SCLK 7
 #define DIN 12
 #define DOUT 13
 #define CSB 14
-#define SCLK_PERIODE 60 // us
+#define SCLK_PERIODE 10 // us
 
 class PressureSensor
 {

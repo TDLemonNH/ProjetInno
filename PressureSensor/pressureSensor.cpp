@@ -44,14 +44,31 @@ void PressureSensor::reset()
 double PressureSensor::pressure()
 {
 	uint32_t d1, d2;
+	uint64_t timer = getTimeStamp();
+	double time;
 	
 	wakeUp();
 	
-	writeWord(0x44);
-	delayMicroseconds(2500);
-	wakeUp();
-	readWord(8);
-	d1 = readWord(24);
+	timer = getTimeStamp();
+	   writeWord(0x44);
+	time = (getTimeStamp() - timer)*1e-3;
+	cout << "Mesure write time: " << time << endl;
+	
+	timer = getTimeStamp();
+	   delayMicroseconds(2500);
+	time = (getTimeStamp() - timer)*1e-3;
+	cout << "Mesure delay time: " << time << endl;
+	
+	timer = getTimeStamp();
+	   wakeUp();
+	time = (getTimeStamp() - timer)*1e-3;
+	cout << "Mesure wake up time: " << time << endl;
+	
+	timer = getTimeStamp();
+	   readWord(8); 
+	   d1 = readWord(24);
+	time = (getTimeStamp() - timer)*1e-3;
+	cout << "Mesure read time: " << time << endl;
 	 
 	writeWord(0x54);
 	delayMicroseconds(2500);
@@ -59,6 +76,9 @@ double PressureSensor::pressure()
 	readWord(8);
 	d2 = readWord(24);
 	//d2 = ((d2 << 8) >> 8);
+	
+	time = (getTimeStamp() - timer)*1e-3;
+	cout << "Mesure on sensor time: " << time << endl;
 
 	
 	return computeTP(d1, d2, mConstants);
@@ -66,7 +86,7 @@ double PressureSensor::pressure()
 
 double PressureSensor::depth()
 {
-	double pressure = 1e-4*(this->pressure() - mP0); // 1bar = 10m, pressure is in 0.1bar
+	return 10*(this->pressure() - mP0); // 1bar = 10m, pressure is in 0.1bar
 }
 
 double PressureSensor::computeTP(uint32_t d1, uint32_t d2, uint32_t *constants)
@@ -77,11 +97,17 @@ double PressureSensor::computeTP(uint32_t d1, uint32_t d2, uint32_t *constants)
 	//int64_t sens = (constants[1] << 15) + (constants[3] * dt) >> 8;
 	//int32_t p = (((d1 * sens) >> 21) - off) >> 15;
 	
+	uint64_t timer = getTimeStamp();
+	double time;
+	
 	int32_t dt = (int32_t)(d2 - constants[5] * pow(2, 8));
 	int32_t temp = (int32_t)(2000 + double(dt  * constants[6]) / pow(2, 23));
 	int64_t off = int64_t((constants[2] * pow(2, 16)) + (constants[4] * dt) / pow(2, 7));
 	int64_t sens = int64_t(constants[1] * pow(2, 15) + (constants[3] * dt) / pow(2, 8));
 	int32_t p = int32_t(((d1 * sens) / pow(2, 21) - off) / pow(2, 15));
+	
+	time = (getTimeStamp() - timer)*1e-3;
+	cout << "Mesure computation time: " << time << endl;
 	
 	/*cout << "dt = " << dt << endl;
 	cout << "C6 = " << dt * constants[6] << endl;
@@ -90,7 +116,7 @@ double PressureSensor::computeTP(uint32_t d1, uint32_t d2, uint32_t *constants)
 	
 	// ,cout << "Pressure : " << p << " & temperature : " << temp << endl;
 	
-	return p*0.1*100; // p = xxxx.x mbar -> Pa
+	return p*0.1*0.001; // p = xxxx.x mbar -> Bar
 }
 
 void PressureSensor::writeWord(char pattern)
