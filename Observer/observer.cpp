@@ -30,9 +30,9 @@ Observer::Observer(){
 	cout << "Bobs = " << endl << Bobs << endl;
 	cout << "Cobs = " << endl << Cobs << endl;
 	
-	state << 0, 0, 0, 0;
+	state << HBAR, 0, NBAR, 0;
 	
-	cout << "StateInit = " << endl << Cobs << endl;
+	cout << "StateInit = " << endl << state << endl;
 }
 
 Observer::~Observer()
