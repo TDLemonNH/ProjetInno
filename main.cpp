@@ -35,7 +35,6 @@ PI_THREAD (valve_cycle) {
 	
 	while(true)
 	{
-		
 		current = getTimeStamp();
 		if ((current - start) > cycle_time)
 		{
@@ -88,7 +87,7 @@ int main(int argc, char* argv[])
 	log.open("log.txt", ios::trunc);
 	if(!log.is_open())
 		cout << "Error while opening log.txt";
-	log << "t ," << "hm, " << "hest, " << "vest, " << "Nest, " << "dest, " << "u" << endl;
+	log << "t ," << "hm, " << "hest, " << "vest, " << "Nest, " << "dest, " << "actual" << "wished" << endl;
 	
 	// Define objects
 	#ifdef RASPI
@@ -163,7 +162,7 @@ int main(int argc, char* argv[])
 			timer = (getTimeStamp() - timer)*1e-3;
 			cout << "Controller time: " << timer << endl;
 			
-			log << (currentT - startT)*1e-6 << ", " << hm << ", " << est(1, 0) << ", " << est(2, 0) << ", " << est(3, 0) << ", " << dest << ", " << u << endl;
+			log << (currentT - startT)*1e-6 << ", " << hm << ", " << est(1, 0) << ", " << est(2, 0) << ", " << est(3, 0) << ", " << dest << ", " << valve_command_actual << ", " << valve_command_wished << endl;
 		}
 	}
 	
