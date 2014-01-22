@@ -30,30 +30,41 @@ void logData(double t, double hm, MatrixXd est, double dest, double u, ofstream 
 PI_THREAD (valve_cycle) {
 	uint64_t current = getTimeStamp();
 	uint64_t start = getTimeStamp();
+	int open_time;
 	int cycle_time = 100000;
 	double u = 0;
 	
 	while(true)
 	{
 		current = getTimeStamp();
-		if ((current - start) > cycle_time)
+		if (((current - start) > open_time) && (digitalRead(VALVE_OUT) || digitalRead(VALVE_IN)))
 		{
 			digitalWrite(VALVE_OUT, 0);
 			digitalWrite(VALVE_IN, 0);
-			delay(10);
-			
+			delay(15);
+		}
+		if ((current - start) > cycle_time)
+		{
 			piLock(0);
 			u = valve_command_wished;
+			
+			if(u > dmaxin)
+				u = dmaxin;
+			if(u < -dmaxout)
+				u = -dmaxout;
+				
 			valve_command_actual = u;
 			piUnlock(0);
 			
-			if ( u > 0 )
+			if (u > 0.1*dmaxin)
 			{
 				digitalWrite(VALVE_IN, 1);
+				open_time = u/dmaxin*0.85*cycle_time;
 			}
-			else if ( u < 0 )
+			else if (u < 0.1*dmaxout)
 			{
 				digitalWrite(VALVE_OUT, 1);
+				open_time = u/dmaxout*0.85*cycle_time;
 			}
 			start = current;
 		}
@@ -152,8 +163,8 @@ int main(int argc, char* argv[])
 			
 			timer = getTimeStamp();
 			
-				// u = cont.step(stateest, 0.15, dest);
-				u = cont.step(stateest, 0.15, 0);
+				u = cont.step(stateest, 0.5, dest);
+				//u = cont.step(stateest, 0.5, 0);
 				
 				piLock(0);
 					valve_command_wished = u;
