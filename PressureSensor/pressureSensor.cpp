@@ -48,13 +48,13 @@ double PressureSensor::pressure()
 	wakeUp();
 	
 	writeWord(0x44);
-	delayMicroseconds(4000);
+	delayMicroseconds(2500);
 	wakeUp();
 	readWord(8);
 	d1 = readWord(24);
 	 
 	writeWord(0x54);
-	delayMicroseconds(4000);
+	delayMicroseconds(2500);
 	wakeUp();
 	readWord(8);
 	d2 = readWord(24);

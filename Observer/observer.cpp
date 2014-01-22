@@ -64,10 +64,10 @@ MatrixXd Observer::step(double hm, double u)
 	
 	previousTime = currentTime;
 	
-	cout << "Observer step: deltaT = " << deltaT << endl;
-	cout << "statedot = " << endl << statedot << endl;
-	cout << "state = " << endl << state << endl;
-	cout << "y = " << endl << y << endl << endl;
+	//cout << "Observer step: deltaT = " << deltaT << endl;
+	//cout << "statedot = " << endl << statedot << endl;
+	//cout << "state = " << endl << state << endl;
+	//cout << "y = " << endl << y << endl << endl;
 	
 	return y;
 }

@@ -63,27 +63,39 @@ int main(int argc, char* argv[])
 	uint64_t startT = getTimeStamp();
 	uint64_t currentT = getTimeStamp();
 	uint64_t previousT = getTimeStamp();
+	uint64_t timer;
 	while(true) 
 	{
 		currentT = getTimeStamp();
 		if((currentT - previousT) > stepIncrement)
 		{
 			previousT = currentT;
+			
+			// Depth mesure
+			timer = getTimeStamp();
 			#ifdef RASPI
 				hm = sensor.depth();
 			#else
 			    hm = 1;
 			#endif
+			timer = (getTimeStamp() - timer)*1e-3;
+			cout << "Mesure time: " << timer << endl;
 			
+			timer = getTimeStamp();
 			MatrixXd est = obs.step(hm, cont.getU());
+			timer = (getTimeStamp() - timer)*1e-3;
+			cout << "Obs time: " << timer << endl;
 			
 			MatrixXd stateest(3, 1);
 			stateest << est(1,0), est(2,0), est(3,0);
 			dest = est(4,0);
 			
-			cout << "Stateest: " << endl << stateest << endl;
+			// cout << "Stateest: " << endl << stateest << endl;
 			
+			timer = getTimeStamp();
 			u = cont.step(stateest, 0.15, dest);
+			timer = (getTimeStamp() - timer)*1e-3;
+			cout << "Controller time: " << timer << endl;
 			
 			log << (currentT - startT)*1e-6 << ", " << hm << ", " << est(1, 0) << ", " << est(2, 0) << ", " << est(3, 0) << ", " << dest << ", " << u << endl;
 		}

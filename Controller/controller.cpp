@@ -30,11 +30,11 @@ double Controller::step(Eigen::Vector3d stateest, double hr, double d1est)
 	
 	MatrixXd out = gain*in;
 	
-	cout << "Controller step: " << endl;
-	cout << "In: " << endl << in << endl;
-	cout << "Bias: "<< endl << bias << endl;
-	cout << "Gain: " << endl << gain << endl;
-	cout << "U: " << endl << out << endl << endl;
+	//cout << "Controller step: " << endl;
+	//cout << "In: " << endl << in << endl;
+	//cout << "Bias: "<< endl << bias << endl;
+	//cout << "Gain: " << endl << gain << endl;
+	//cout << "U: " << endl << out << endl << endl;
 	
 	u = out(0, 0);
 	return u;
