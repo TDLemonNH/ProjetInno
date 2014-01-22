@@ -56,12 +56,12 @@ PI_THREAD (valve_cycle) {
 			valve_command_actual = u;
 			piUnlock(0);
 			
-			if (u > 0.1*dmaxin)
+			if (u > 0)
 			{
 				digitalWrite(VALVE_IN, 1);
 				open_time = u/dmaxin*0.85*cycle_time;
 			}
-			else if (u < 0.1*dmaxout)
+			else if (u < 0)
 			{
 				digitalWrite(VALVE_OUT, 1);
 				open_time = u/dmaxout*0.85*cycle_time;
