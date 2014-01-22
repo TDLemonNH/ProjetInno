@@ -2,6 +2,8 @@
 // g++ -o controller main.cpp Observer/observer.cpp Controller/controller.cpp utils.cpp -I "E:/Dropbox/Projet Inno veste plongeur/Eigen/"
 
 #define RASPI
+#define VALVE_IN 2
+#define VALVE_OUT 3
 
 #ifdef RASPI
 	#include <wiringPi.h>
@@ -18,7 +20,47 @@
 using namespace std;
 using namespace Eigen;
 
+double valve_command_wished = 0;
+double valve_command_actual = 0;
+double dmaxin = 0.1;
+double dmaxout = 0.05;
+
 void logData(double t, double hm, MatrixXd est, double dest, double u, ofstream &log);
+
+PI_THREAD (valve_cycle) {
+	uint64_t current = getTimeStamp();
+	uint64_t start = getTimeStamp();
+	int cycle_time = 100000;
+	double u = 0;
+	
+	while(true)
+	{
+		
+		current = getTimeStamp();
+		if ((current - start) > cycle_time)
+		{
+			digitalWrite(VALVE_OUT, 0);
+			digitalWrite(VALVE_IN, 0);
+			delay(10);
+			
+			piLock(0);
+			u = valve_command_wished;
+			valve_command_actual = u;
+			piUnlock(0);
+			
+			if ( u > 0 )
+			{
+				digitalWrite(VALVE_IN, 1);
+			}
+			else if ( u < 0 )
+			{
+				digitalWrite(VALVE_OUT, 1);
+			}
+			start = current;
+		}
+	}
+}	
+
 
 int main(int argc, char* argv[])
 {
@@ -58,6 +100,19 @@ int main(int argc, char* argv[])
 	
 	Controller cont;
 	
+	int process = piThreadCreate(valve_cycle);
+	if (process !=0)
+	{
+		cout << "erreur" << endl;
+	}
+	
+	// Initialize valves
+	pinMode (VALVE_IN, OUTPUT);
+	pinMode (VALVE_OUT, OUTPUT);
+	
+	digitalWrite(VALVE_IN, 0);
+	digitalWrite(VALVE_OUT, 0);
+	
 	// Start controller loop
 	double hm; double dest; double u;
 	uint64_t startT = getTimeStamp();
@@ -73,17 +128,19 @@ int main(int argc, char* argv[])
 			
 			// Depth mesure
 			timer = getTimeStamp();
-			#ifdef RASPI
-				hm = sensor.depth();
-				cout << "hm: " << hm << endl;
-			#else
-			    hm = 1;
-			#endif
+				#ifdef RASPI
+					hm = sensor.depth();
+				#else
+					hm = 1;
+				#endif
 			timer = (getTimeStamp() - timer)*1e-3;
 			cout << "Mesure time: " << timer << endl;
 			
 			timer = getTimeStamp();
-			MatrixXd est = obs.step(hm, cont.getU());
+				piLock(0);
+					u = valve_command_actual;
+				piUnlock(0);
+				MatrixXd est = obs.step(hm, u);
 			timer = (getTimeStamp() - timer)*1e-3;
 			cout << "Obs time: " << timer << endl;
 			
@@ -94,7 +151,13 @@ int main(int argc, char* argv[])
 			// cout << "Stateest: " << endl << stateest << endl;
 			
 			timer = getTimeStamp();
-			u = cont.step(stateest, 0.15, dest);
+			
+				u = cont.step(stateest, 0.15, dest);
+				
+				piLock(0);
+					valve_command_wished = u;
+				piUnlock(0);
+			
 			timer = (getTimeStamp() - timer)*1e-3;
 			cout << "Controller time: " << timer << endl;
 			
