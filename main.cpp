@@ -16,16 +16,28 @@
 #include "Controller/controller.hpp"
 #include "utils.hpp"
 #include <Eigen/Dense>
+#include <math.h>
 
 using namespace std;
 using namespace Eigen;
 
+double HR = 1;
+
 double valve_command_wished = 0;
 double valve_command_actual = 0;
-double dmaxin = 0.1;
-double dmaxout = 0.05;
+double hmforvalve;
+double dmaxin = 0.026;
+double dmaxout = 0.0084;
 
 void logData(double t, double hm, MatrixXd est, double dest, double u, ofstream &log);
+
+double computeDmaxout(double hm)
+{
+	double p = (101325 + hm*1e4)*1e-6; // p in MPa
+	double p0 = 101325*1e-6;
+	double qmaxout = 226.3*1.2*sqrt(abs(p - p0)*(p0 + p0));
+	return qmaxout*p0*1e6/8.31/293/60000;
+}
 
 PI_THREAD (valve_cycle) {
 	uint64_t current = getTimeStamp();
@@ -33,6 +45,7 @@ PI_THREAD (valve_cycle) {
 	int open_time;
 	int cycle_time = 100000;
 	double u = 0;
+	double hm;
 	
 	while(true)
 	{
@@ -47,6 +60,11 @@ PI_THREAD (valve_cycle) {
 		{
 			piLock(0);
 			u = valve_command_wished;
+			hm = hmforvalve;
+			dmaxout = computeDmaxout(hm);
+			
+			cout << "Debit max out: " << dmaxout << endl;
+			
 			
 			if(u > dmaxin)
 				u = dmaxin;
@@ -163,11 +181,12 @@ int main(int argc, char* argv[])
 			
 			timer = getTimeStamp();
 			
-				//u = cont.step(stateest, 0.5, dest);
-				u = cont.step(stateest, 0.5, 0);
+				//u = cont.step(stateest, HR, dest);
+				u = cont.step(stateest, HR, 0);
 				
 				piLock(0);
 					valve_command_wished = u;
+					hmforvalve = hm;
 				piUnlock(0);
 			
 			timer = (getTimeStamp() - timer)*1e-3;
