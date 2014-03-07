@@ -21,22 +21,27 @@
 using namespace std;
 using namespace Eigen;
 
-double HR = 1;
+double HR = 0.5;
 
 double valve_command_wished = 0;
 double valve_command_actual = 0;
 double hmforvalve;
 double dmaxin = 0.026;
-double dmaxout = 0.0084;
+double dmaxout = 0;
 
 void logData(double t, double hm, MatrixXd est, double dest, double u, ofstream &log);
 
 double computeDmaxout(double hm)
 {
-	double p = (101325 + hm*1e4)*1e-6; // p in MPa
-	double p0 = 101325*1e-6;
-	double qmaxout = 226.3*1.2*sqrt(abs(p - p0)*(p0 + p0));
-	return qmaxout*p0*1e6/8.31/293/60000;
+	//double p = (101325 + hm*1e4)*1e-6; // p in MPa
+	//double p0 = 101325*1e-6;
+	//double qmaxout = 226.3*1.2*sqrt(abs(p - p0)*(p0 + p0)); //en l/min
+	//return qmaxout*p0*1e6/8.31/293/60000; //conversion en mol/s
+	
+	double p = (103900 + hm*1e4)*1e-6; // p in MPa
+	double p0 = 103900*1e-6;
+	double qmaxout = 240*47*sqrt(abs(p - p0)*(p0 + p0)) * 0.2; //en l/min
+	return qmaxout*p0*1e6/8.31/293/60000; //conversion en mol/s
 }
 
 PI_THREAD (valve_cycle) {
