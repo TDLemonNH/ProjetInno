@@ -16,6 +16,7 @@ public:
 	~FlowSensor();
 	
 	double flow();
+	short reverseByteOrder(short v);
 	
 private:
 	int fd;

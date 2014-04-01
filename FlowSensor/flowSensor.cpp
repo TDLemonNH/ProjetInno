@@ -43,3 +43,9 @@ double FlowSensor::flow()
 	
 	return measure;
 }
+
+short FlowSensor::reverseByteOrder(short v)
+{
+	v = ((v & 0xFF) << 8) | ((v & 0xFF00) >> 8);
+	return v;
+}
