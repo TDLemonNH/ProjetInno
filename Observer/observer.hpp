@@ -14,6 +14,11 @@ public:
 	Eigen::MatrixXd step(double hm, double u);
 	void start();
 	
+	void setA(Eigen::Matrix4d value) { A = value; }
+	void setB(Eigen::Vector4d value) { B = value; }
+	void setC(Eigen::RowVector4d value) { C = value; }
+	void setL(Eigen::Vector4d value) { L = value; }
+	
 private:
 	Eigen::Matrix4d A;
 	Eigen::Vector4d B;

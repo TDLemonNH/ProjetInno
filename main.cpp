@@ -21,13 +21,15 @@
 using namespace std;
 using namespace Eigen;
 
-double HR = 0.5;
+double HR = 1;
 
 double valve_command_wished = 0;
 double valve_command_actual = 0;
 double hmforvalve;
 double dmaxin = 0.026;
 double dmaxout = 0;
+double C = 9.2;
+double b = 0.35;
 
 void logData(double t, double hm, MatrixXd est, double dest, double u, ofstream &log);
 
@@ -40,7 +42,9 @@ double computeDmaxout(double hm)
 	
 	double p = (103900 + hm*1e4)*1e-6; // p in MPa
 	double p0 = 103900*1e-6;
-	double qmaxout = 240*47*sqrt(abs(p - p0)*(p0 + p0)) * 0.2; //en l/min
+	//double qmaxout = 240*47*sqrt(abs(p - p0)*(p0 + p0)) * 0.2; //en l/min
+	//double qmaxout = 600*C*(p+0.1)*sqrt(1 - (((p0+0.1)/(p+0.1)-b)/(1-b))^2); //en l/min
+	double qmaxout = 12800 - 239000*p + 1110000*p*p + 67;
 	return qmaxout*p0*1e6/8.31/293/60000; //conversion en mol/s
 }
 

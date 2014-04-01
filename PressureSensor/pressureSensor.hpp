@@ -20,7 +20,7 @@ public:
 	PressureSensor();
 	~PressureSensor();
 	
-	void reset();
+	bool reset();
 	double pressure();
 	double depth();
 	

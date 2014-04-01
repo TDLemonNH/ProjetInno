@@ -6,13 +6,21 @@ PressureSensor::PressureSensor()
 {
 	cout << "Creating pressure sensor object." << endl;
 	
-	wiringPiSetup ();
 	pinMode (SCLK, OUTPUT);
 	pinMode (DOUT, INPUT);
 	pinMode (DIN, OUTPUT);
 	pinMode (CSB, OUTPUT);
-	
-	reset();
+}
+
+PressureSensor::~PressureSensor()
+{
+}
+
+bool PressureSensor::reset()
+{
+	wakeUp();
+	writeWord(0x1e);
+	delayMicroseconds(70*SCLK_PERIODE); // Wait for reloading
 	
 	// Read constants
 	for(int i = 0; i < 8; i++)
@@ -23,22 +31,15 @@ PressureSensor::PressureSensor()
 	}
 	
 	if( int(checkSum(mConstants)) != mConstants[7] )
+	{
 		cout << "Warning: check sum different from C7, check data/communication!";
-		
+		return false;
+	}
+	
 	// Save reference pressure (h = 0)
 	mP0 = this->pressure();
-
-}
-
-PressureSensor::~PressureSensor()
-{
-}
-
-void PressureSensor::reset()
-{
-	wakeUp();
-	writeWord(0x1e);
-	delayMicroseconds(70*SCLK_PERIODE); // Wait for reloading
+	
+	return true;
 }
 
 double PressureSensor::pressure()

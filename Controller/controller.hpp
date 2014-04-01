@@ -13,6 +13,10 @@ public:
 	
 	double step(Eigen::Vector3d stateest, double hr, double d1est);
 	double getU();
+	
+	void setK(Eigen::RowVector3d value) { K = value; }
+	void setk(double value) { k = value; }
+	void setkd(double value) { kd = value; }
 
 private:
 	Eigen::RowVector3d K;
