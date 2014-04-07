@@ -13,9 +13,9 @@ double computeDmaxout(double hm)
 	double p = (103900 + hm*1e4)*1e-6; // p in MPa
 	double p0 = 103900*1e-6;
 	//double qmaxout = 240*47*sqrt(abs(p - p0)*(p0 + p0)) * 0.2; //en l/min
-	//double qmaxout = 600*C*(p+0.1)*sqrt(1 - (((p0+0.1)/(p+0.1)-b)/(1-b))^2); //en l/min
+	//double qmaxout = 600*C*(p+0.1)*sqrt(1 - (((p0+0.1)/(p+0.1)-b)/(1-b))*(((p0+0.1)/(p+0.1)-b)/(1-b))); //en l/min
 	double qmaxout = 12800 - 239000*p + 1110000*p*p + 67;
-	return qmaxout*p0*1e6/8.31/293/60000; //conversion en mol/s
+	return qmaxout*p0*1e6/8.31/293/60/1000 * 10; //conversion en mol/s
 }	
 
 PI_THREAD (valve_cycle) {
@@ -64,7 +64,7 @@ PI_THREAD (valve_cycle) {
 			else if (u < 0)
 			{
 				digitalWrite(VALVE_OUT, 1);
-				open_time = u/dmaxout*0.85*cycle_time;
+				open_time = abs(u/dmaxout*0.85*cycle_time);
 			}
 			start = current;
 		}
