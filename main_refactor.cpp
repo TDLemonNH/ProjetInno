@@ -26,7 +26,7 @@ double HR = 1; // Desired depth (command)
 double valve_command_wished = 0;
 double valve_command_actual = 0;
 double hmforvalve;
-double dmaxin = 0.026;
+double dmaxin = 0.038; // A 2.5 bar en entree
 double dmaxout = 0;
 
 // Valve thread definition

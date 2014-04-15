@@ -15,7 +15,7 @@ double computeDmaxout(double hm)
 	//double qmaxout = 240*47*sqrt(abs(p - p0)*(p0 + p0)) * 0.2; //en l/min
 	//double qmaxout = 600*C*(p+0.1)*sqrt(1 - (((p0+0.1)/(p+0.1)-b)/(1-b))*(((p0+0.1)/(p+0.1)-b)/(1-b))); //en l/min
 	double qmaxout = 12800 - 239000*p + 1110000*p*p + 67;
-	return qmaxout*p0*1e6/8.31/293/60/1000 * 10; //conversion en mol/s
+	return qmaxout*p0*1e6/8.31/293/60/1000; //conversion en mol/s
 }	
 
 PI_THREAD (valve_cycle) {
